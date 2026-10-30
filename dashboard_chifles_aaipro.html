@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Chifles · AAIPRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --verde:#14532D; --verde-mid:#2E7D32; --verde-lt:#66BB6A; --verde-bg:#E8F5E9; --fondo:#F1F7E4;
+  --crema:#FFFBE0; --amar:#FACC15; --amar-lt:#FDE047; --amar-dk:#A16207; --amar-bg:#FEF9C3;
+  --rojo:#B71C1C; --txt:#14301B; --txt-s:#5A7355; --borde:#CBE0A8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--txt);min-height:100vh;overflow-x:hidden}
+header{background:linear-gradient(135deg,#14532D 0%,#1B6B35 100%);padding:12px 16px;border-bottom:4px solid var(--amar)}
+.h-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.h-title{font-family:'DM Serif Display',serif;font-size:20px;color:#fff;line-height:1.15}
+.h-right{text-align:right;max-width:55%}
+.h-empresa{font-family:'DM Serif Display',serif;color:var(--amar-lt);font-size:14px;line-height:1.25}
+.btn-link{display:inline-block;margin-top:8px;background:var(--amar);color:var(--verde);font-size:11px;font-weight:700;padding:5px 10px;border-radius:14px;text-decoration:none}
+.wrap{padding:12px 14px 30px;max-width:980px;margin:0 auto}
+.estado{background:var(--amar-bg);border-bottom:1px solid var(--borde);padding:7px 16px;font-size:11px;color:var(--txt-s);display:flex;justify-content:space-between;gap:8px;align-items:center}
+.estado button{background:var(--verde);color:var(--amar-lt);border:none;border-radius:12px;padding:5px 11px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer}
+.filtros{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.filtros label{font-size:11px;color:var(--txt-s);font-weight:500;display:block;margin-bottom:3px}
+.filtros select{width:100%;border:1px solid var(--borde);border-radius:8px;padding:10px;font-size:16px;font-family:inherit;background:#fff;color:var(--txt);font-weight:600;min-height:42px}
+h2{font-size:10px;font-weight:700;color:var(--txt-s);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 8px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.kpi{background:#fff;border-radius:10px;padding:11px 12px;border:1px solid var(--borde)}
+.kpi-l{font-size:10px;color:var(--txt-s);margin-bottom:4px;font-weight:500;line-height:1.3}
+.kpi-v{font-size:20px;font-weight:700;color:var(--verde);line-height:1}
+.kpi-u{font-size:10px;color:var(--txt-s);margin-top:3px}
+.kpi.hl{border-color:var(--amar);background:var(--amar-bg)}
+.kpi.ok{border-color:var(--verde-mid);background:var(--verde-bg)}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#fff;border-radius:12px;border:1px solid var(--borde);padding:13px;min-width:0}
+.card h3{font-size:12.5px;color:var(--verde);margin-bottom:8px;font-weight:700}
+.cv{position:relative;height:230px}
+.vacio{font-size:12px;color:var(--txt-s);text-align:center;padding:30px 10px}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--verde);color:var(--amar-lt);padding:7px 8px;text-align:left;font-weight:600;font-size:10px;white-space:nowrap}
+th.r,td.r{text-align:right}
+td{padding:7px 8px;border-bottom:1px solid #E5EFD2;white-space:nowrap}
+.pager{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--txt-s)}
+.pager button{background:var(--verde);color:var(--amar-lt);border:none;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;min-height:38px}
+.pager button:disabled{background:#CBD5C0;color:#fff;cursor:default}
+.btn-csv{margin-top:10px;width:100%;background:var(--amar);color:var(--verde);border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700;background:var(--verde-bg);color:var(--verde);border:1px solid var(--borde)}
+@media(max-width:700px){.charts{grid-template-columns:1fr}.h-title{font-size:17px}.h-empresa{font-size:12.5px}.kpi-grid{grid-template-columns:1fr 1fr}.kpi-v{font-size:18px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-top">
+    <div class="h-title">Dashboard de producción<br>Chifles de plátano</div>
+    <div class="h-right">
+      <div class="h-empresa">La Asociación Agroindustrias Progreso – AAIPRO</div>
+      <a class="btn-link" id="btn-asistente" href="#">← Asistente de costos</a>
+    </div>
+  </div>
+</header>
+<div class="estado"><span id="estado">Cargando datos…</span><button onclick="cargar()">↻ Actualizar</button></div>
+
+<div class="wrap">
+  <div class="filtros">
+    <div><label>Escenario</label>
+      <select id="f-esc" onchange="pag=0;render()">
+        <option value="">Todos</option><option value="completo">Producción completa</option>
+        <option value="blanca">Marca blanca</option><option value="maquila">Maquila</option>
+      </select></div>
+    <div><label>Mes</label><select id="f-mes" onchange="pag=0;render()"><option value="">Todos</option></select></div>
+  </div>
+
+  <h2>Producción y costos</h2>
+  <div class="kpi-grid" id="kpi-prod"></div>
+
+  <h2>Aceite</h2>
+  <div class="kpi-grid" id="kpi-aceite"></div>
+
+  <h2>Gas, electricidad y mano de obra</h2>
+  <div class="kpi-grid" id="kpi-serv"></div>
+
+  <h2>Tendencias</h2>
+  <div class="charts">
+    <div class="card"><h3>Costo por unidad (ponderado) por mes</h3><div class="cv"><canvas id="c-costo"></canvas></div></div>
+    <div class="card"><h3>Reposición de aceite por mes (galones)</h3><div class="cv"><canvas id="c-aceite"></canvas></div></div>
+    <div class="card"><h3>Consumo de gas por mes (kg)</h3><div class="cv"><canvas id="c-gas"></canvas></div></div>
+    <div class="card"><h3>Distribución del costo por grupo</h3><div class="cv"><canvas id="c-grupos"></canvas></div></div>
+    <div class="card"><h3>Costo total por escenario (S/)</h3><div class="cv"><canvas id="c-esc"></canvas></div></div>
+    <div class="card"><h3>Electricidad por mes (kWh)</h3><div class="cv"><canvas id="c-elec"></canvas></div></div>
+  </div>
+
+  <h2>Resumen por escenario</h2>
+  <div class="card"><div class="tbl-wrap" id="resumen-esc"></div></div>
+
+  <h2>Lotes registrados</h2>
+  <div class="card"><div class="tbl-wrap" id="tabla"></div></div>
+  <button class="btn-csv" onclick="descargarCSV()">⬇ Descargar lotes (CSV)</button>
+</div>
+
+<script>
+const CFG = {
+  APPS_SCRIPT_URL: 'PEGAR_URL_DEPLOY_AQUI',   // la misma URL /exec del asistente
+  ASISTENTE_URL:   'asistente_chifles_aaipro.html',   // misma carpeta de GitHub Pages (o URL completa)
+};
+const NOM_ESC = {completo:'Producción completa', blanca:'Marca blanca', maquila:'Maquila'};
+const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const KG_BALON = 45;
+const C = {verde:'#2E7D32', verdeOsc:'#14532D', lt:'#66BB6A', amar:'#FACC15', amarOsc:'#A16207', gris:'#CBD5C0'};
+
+let DATOS = [], charts = {};
+
+const $ = id => document.getElementById(id);
+function pick(r, ...names){
+  const ks = Object.keys(r);
+  for (const n of names){ const k = ks.find(x => x.toLowerCase()===n.toLowerCase()); if (k!==undefined) return r[k]; }
+  return undefined;
+}
+const n = (r, k) => { const v = parseFloat(pick(r,k)); return isNaN(v) ? 0 : v; };
+const fmt = (v,d=2) => (v===null||v===undefined||isNaN(v)) ? '—' : Number(v).toLocaleString('es-PE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const sf = v => 'S/ ' + fmt(v);
+
+function mesDe(r){            // "dd/MM/yyyy" → "yyyy-MM"
+  const m = String(pick(r,'fecha_proceso')||'').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  return m ? `${m[3]}-${m[2].padStart(2,'0')}` : null;
+}
+const etiquetaMes = k => { const [y,m] = k.split('-'); return `${MESES[+m-1]} ${y.slice(2)}`; };
+
+async function cargar(){
+  const ok = CFG.APPS_SCRIPT_URL && !CFG.APPS_SCRIPT_URL.includes('PEGAR_URL');
+  if (!ok){ $('estado').textContent = '⚙️ Falta configurar la URL del Apps Script'; DATOS=[]; render(); return; }
+  $('estado').textContent = 'Cargando datos…';
+  try{
+    const resp = await fetch(CFG.APPS_SCRIPT_URL + '?action=datos');
+    const json = await resp.json();
+    if (json.status!=='ok') throw new Error(json.mensaje||'respuesta inválida');
+    DATOS = json.datos.map(r => ({...r, _mes: mesDe(r)}));
+    const meses = [...new Set(DATOS.map(r=>r._mes).filter(Boolean))].sort();
+    const sel = $('f-mes'), actual = sel.value;
+    sel.innerHTML = '<option value="">Todos</option>' + meses.map(m=>`<option value="${m}">${etiquetaMes(m)}</option>`).join('');
+    sel.value = meses.includes(actual) ? actual : '';
+    $('estado').textContent = `✅ ${DATOS.length} lote(s) · actualizado ${new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})}`;
+  }catch(e){
+    $('estado').textContent = '⚠️ No se pudo leer Google Sheets';
+  }
+  render();
+}
+
+function filtrados(){
+  const e = $('f-esc').value, m = $('f-mes').value;
+  return DATOS.filter(r => (!e || pick(r,'escenario')===e) && (!m || r._mes===m));
+}
+const suma = (rows,k) => rows.reduce((s,r)=>s+n(r,k),0);
+
+function kpi(l,v,u,cls=''){ return `<div class="kpi ${cls}"><div class="kpi-l">${l}</div><div class="kpi-v">${v}</div><div class="kpi-u">${u||''}</div></div>`; }
+
+function render(){
+  const rows = filtrados();
+  const cap = suma(rows,'costo_total'), und = suma(rows,'unidades_producidas');
+  $('kpi-prod').innerHTML =
+    kpi('Lotes', rows.length, 'registrados','hl') +
+    kpi('Dedos procesados', fmt(suma(rows,'dedos'),0), `${fmt(suma(rows,'kg_platano'),0)} kg de plátano`) +
+    kpi('Chifle terminado', fmt(suma(rows,'producto_terminado'),1), 'kg','ok') +
+    kpi('Costo total', sf(cap), 'capital de trabajo') +
+    kpi('Costo por unidad', und>0 ? sf(cap/und) : '—', 'ponderado: Σ costo ÷ Σ unidades','hl') +
+    kpi('Utilidad estimada', sf(suma(rows,'utilidad_soles')), 'según % de cada lote','ok');
+
+  const gRep = suma(rows,'aceite_reposicion_gal'), sRep = suma(rows,'aceite_reposicion_soles');
+  $('kpi-aceite').innerHTML =
+    kpi('Aceite repuesto', fmt(gRep,1)+' gal', 'reposición total','hl') +
+    kpi('Costo de reposición', sf(sRep), 'total en soles','hl') +
+    kpi('Aceite de fritado usado', fmt(suma(rows,'aceite_fritado_gal'),1)+' gal', sf(suma(rows,'aceite_fritado_soles'))+' cobrados') +
+    kpi('Aceite aportado por clientes', fmt(suma(rows,'aceite_cliente_gal'),1)+' gal', 'maquila');
+
+  const kgGas = suma(rows,'gas_kg');
+  $('kpi-serv').innerHTML =
+    kpi('Gas consumido', fmt(kgGas,1)+' kg', `≈ ${fmt(kgGas/KG_BALON,1)} balones de ${KG_BALON} kg`,'ok') +
+    kpi('Costo de gas', sf(suma(rows,'gas_soles')), 'total') +
+    kpi('Electricidad', fmt(suma(rows,'electricidad_kwh'),1)+' kWh', sf(suma(rows,'electricidad_soles'))) +
+    kpi('Horas-hombre', fmt(suma(rows,'horas_hombre'),1), `${fmt(suma(rows,'dias_trabajo'),0)} día(s) de trabajo`);
+
+  renderCharts(rows);
+  renderTabla(rows);
+}
+
+function porMes(rows){
+  const claves = [...new Set(DATOS.map(r=>r._mes).filter(Boolean))].sort();
+  if (!claves.length) return {labels:[], map:{}};
+  // completar meses intermedios para que no se "salten"
+  const full = []; let [y,m] = claves[0].split('-').map(Number); const [y2,m2] = claves[claves.length-1].split('-').map(Number);
+  while (y<y2 || (y===y2 && m<=m2)){ full.push(`${y}-${String(m).padStart(2,'0')}`); m++; if (m>12){m=1;y++;} }
+  const map = {}; full.forEach(k => map[k] = []);
+  rows.forEach(r => { if (r._mes && map[r._mes]) map[r._mes].push(r); });
+  return {labels: full, map};
+}
+
+function dibujar(id, cfg){
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart($(id), cfg);
+}
+const opcionesBase = {responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}},y:{beginAtZero:true}}};
+
+function renderCharts(rows){
+  const {labels, map} = porMes(rows);
+  const L = labels.map(etiquetaMes);
+  const serie = (fn, vacioNull) => labels.map(k => { const g = map[k]; return g.length ? fn(g) : (vacioNull ? null : 0); });
+
+  // costo/und ponderado: Σ costo ÷ Σ unidades; meses sin producción → null (no cae a 0)
+  dibujar('c-costo', {type:'line', data:{labels:L, datasets:[{data:serie(g => { const u=suma(g,'unidades_producidas'); return u>0 ? suma(g,'costo_total')/u : null; }, true),
+    borderColor:C.verde, backgroundColor:C.amar, pointRadius:4, tension:.25, spanGaps:false}]},
+    options:{...opcionesBase, scales:{x:{grid:{display:false}},y:{beginAtZero:false, ticks:{callback:v=>'S/ '+v}}},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>' S/ '+fmt(c.parsed.y,3)}}}}});
+
+  dibujar('c-aceite', {type:'bar', data:{labels:L, datasets:[{data:serie(g=>suma(g,'aceite_reposicion_gal')), backgroundColor:serie(g=>g.length?C.amar:C.gris)}]},
+    options:{...opcionesBase, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>' '+fmt(c.parsed.y,1)+' gal · '+sf(suma(map[labels[c.dataIndex]],'aceite_reposicion_soles'))}}}}});
+
+  dibujar('c-gas', {type:'bar', data:{labels:L, datasets:[{data:serie(g=>suma(g,'gas_kg')), backgroundColor:C.verde}]},
+    options:{...opcionesBase, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>' '+fmt(c.parsed.y,1)+' kg · '+fmt(c.parsed.y/KG_BALON,1)+' balones'}}}}});
+
+  dibujar('c-elec', {type:'bar', data:{labels:L, datasets:[{data:serie(g=>suma(g,'electricidad_kwh')), backgroundColor:C.lt}]},
+    options:{...opcionesBase, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>' '+fmt(c.parsed.y,1)+' kWh'}}}}});
+
+  const grp = [['Materia prima e insumos','costo_materia_prima_insumos',C.verdeOsc],['Servicios','costo_servicios',C.lt],
+               ['Mant., dep. y aceite','costo_mant_dep_aceite',C.amar],['Mano de obra','costo_mano_obra',C.verde],['Administrativos','costo_administrativos',C.amarOsc]];
+  dibujar('c-grupos', {type:'doughnut', data:{labels:grp.map(g=>g[0]), datasets:[{data:grp.map(g=>suma(rows,g[1])), backgroundColor:grp.map(g=>g[2])}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{boxWidth:10, font:{size:10}}}, tooltip:{callbacks:{label:c=>' '+c.label+': '+sf(c.parsed)}}}}});
+
+  const escs = ['completo','blanca','maquila'];
+  dibujar('c-esc', {type:'bar', data:{labels:escs.map(e=>NOM_ESC[e]), datasets:[{data:escs.map(e=>suma(rows.filter(r=>pick(r,'escenario')===e),'costo_total')), backgroundColor:[C.verde,C.amar,C.lt]}]},
+    options:{...opcionesBase, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>' '+sf(c.parsed.y)+' · '+rows.filter(r=>pick(r,'escenario')===escs[c.dataIndex]).length+' lote(s)'}}}}});
+}
+
+const POR_PAG = 5;
+let pag = 0;
+function irPag(d){ pag += d; renderTabla(filtrados()); }
+
+function renderResumenEsc(rows){
+  const escs = ['completo','blanca','maquila'];
+  $('resumen-esc').innerHTML = '<table><tr><th>Escenario</th><th class="r">Lotes</th><th class="r">Dedos</th><th class="r">Unid.</th><th class="r">Costo/und</th><th class="r">Utilidad</th></tr>' +
+    escs.map(e => {
+      const g = rows.filter(r => pick(r,'escenario')===e), u = suma(g,'unidades_producidas');
+      return `<tr><td><span class="badge">${NOM_ESC[e]}</span></td><td class="r">${g.length}</td><td class="r">${fmt(suma(g,'dedos'),0)}</td>
+        <td class="r">${fmt(u,0)}</td><td class="r">${u>0?sf(suma(g,'costo_total')/u):'—'}</td><td class="r">${sf(suma(g,'utilidad_soles'))}</td></tr>`;
+    }).join('') + '</table>';
+}
+
+function descargarCSV(){
+  const rows = filtrados();
+  if (!rows.length) return;
+  const cols = Object.keys(rows[0]).filter(k => k!=='_mes');
+  const esc = v => { const s = String(v===undefined||v===null?'':v); return /[",\n;]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; };
+  const csv = '﻿' + [cols.join(','), ...rows.map(r => cols.map(k => esc(r[k])).join(','))].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+  a.download = 'lotes_chifles_aaipro.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+function renderTabla(rows){
+  renderResumenEsc(rows);
+  if (!rows.length){ $('tabla').innerHTML = '<div class="vacio">Sin lotes para mostrar.</div>'; return; }
+  const orden = [...rows].sort((a,b)=>String(pick(b,'timestamp')).localeCompare(String(pick(a,'timestamp'))));
+  const pags = Math.ceil(orden.length/POR_PAG);
+  pag = Math.min(Math.max(pag,0), pags-1);
+  const desde = pag*POR_PAG, ult = orden.slice(desde, desde+POR_PAG);
+  const pager = `<div class="pager"><button onclick="irPag(-1)" ${pag===0?'disabled':''}>← Anterior</button>
+    <span>${desde+1}–${desde+ult.length} de ${orden.length}</span>
+    <button onclick="irPag(1)" ${pag>=pags-1?'disabled':''}>Siguiente →</button></div>`;
+  $('tabla').innerHTML = `<table><tr><th>Lote</th><th>Fecha</th><th>Escenario</th><th class="r">Dedos</th><th class="r">Unid.</th><th class="r">Costo/und</th><th class="r">Costo total</th><th class="r">Aceite rep. (gal)</th><th class="r">Gas (kg)</th></tr>` +
+    ult.map(r => `<tr><td style="font-weight:700;font-size:10px">${pick(r,'lote')}</td><td>${pick(r,'fecha_proceso')}</td>
+      <td><span class="badge">${NOM_ESC[pick(r,'escenario')]||pick(r,'escenario')}</span></td>
+      <td class="r">${fmt(n(r,'dedos'),0)}</td><td class="r">${fmt(n(r,'unidades_producidas'),0)}</td>
+      <td class="r">${sf(n(r,'costo_und'))}</td><td class="r">${sf(n(r,'costo_total'))}</td>
+      <td class="r">${fmt(n(r,'aceite_reposicion_gal'),1)}</td><td class="r">${fmt(n(r,'gas_kg'),1)}</td></tr>`).join('') + '</table>' + pager;
+}
+
+(function init(){
+  $('btn-asistente').href = CFG.ASISTENTE_URL || 'asistente_chifles_aaipro.html';
+  cargar();
+})();
+</script>
+</body>
+</html>
