@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Costos de Chifles · AAIPRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#14532D; --verde-mid:#2E7D32; --verde-lt:#66BB6A;
+  --verde-bg:#E8F5E9; --fondo:#F1F7E4; --crema:#FFFBE0;
+  --amar:#FACC15; --amar-lt:#FDE047; --amar-dk:#A16207; --amar-bg:#FEF9C3;
+  --rojo:#B71C1C; --rojo-lt:#FFEBEE;
+  --txt:#14301B; --txt-s:#5A7355; --borde:#CBE0A8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--fondo);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#14532D 0%,#1B6B35 100%);padding:12px 16px;border-bottom:4px solid var(--amar)}
+.h-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.h-title{font-family:'DM Serif Display',serif;font-size:20px;color:#fff;line-height:1.15}
+.h-right{text-align:right;max-width:55%}
+.h-empresa{font-family:'DM Serif Display',serif;color:var(--amar-lt);font-size:14px;line-height:1.25}
+.btn-dash{display:inline-block;margin-top:8px;background:var(--amar);color:var(--verde);font-size:11px;font-weight:700;padding:5px 10px;border-radius:14px;text-decoration:none}
+
+.sync-bar{background:var(--verde-mid);color:#fff;font-size:11px;padding:6px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.btn-sync{background:var(--amar);color:var(--verde);border:none;border-radius:12px;padding:5px 11px;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
+.lote-bar{background:var(--amar-bg);border-bottom:1px solid var(--borde);padding:7px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lote-id{font-family:'DM Serif Display',serif;color:var(--verde);font-size:14px}
+.lote-fecha{font-size:11px;color:var(--txt-s)}
+
+.wrap{padding:12px 14px 30px;max-width:760px;margin:0 auto}
+.card{background:#fff;border-radius:12px;border:1px solid var(--borde);padding:13px;margin-bottom:12px}
+.sec-label{font-size:10px;font-weight:700;color:var(--txt-s);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+
+/* ESCENARIOS */
+.esc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.esc{border:2px solid var(--borde);background:var(--fondo);border-radius:10px;padding:10px 4px;cursor:pointer;text-align:center;font-family:inherit;color:var(--txt);min-height:56px}
+.esc.active{border-color:var(--verde);background:var(--verde);color:#fff}
+.esc-n{font-size:10px;font-weight:700;color:var(--amar-dk);margin-bottom:2px}
+.esc.active .esc-n{color:var(--amar-lt)}
+.esc-t{font-size:12.5px;font-weight:700;line-height:1.2}
+.esc-desc{margin-top:10px;font-size:12px;color:var(--txt-s);line-height:1.45;background:var(--crema);border-left:4px solid var(--amar);padding:8px 10px;border-radius:0 8px 8px 0}
+
+/* INPUTS */
+.inputs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.field{display:flex;flex-direction:column;gap:3px;min-width:0}
+.field label{font-size:11px;color:var(--txt-s);font-weight:500;line-height:1.25}
+.field input,.field select{border:1px solid var(--borde);border-radius:8px;padding:10px;font-size:16px;font-family:inherit;background:var(--crema);color:var(--txt);font-weight:600;width:100%;min-height:42px}
+.field input:focus,.field select:focus{outline:none;border-color:var(--verde-mid);background:#fff}
+.field input:disabled{background:#EEF2E6;color:#8A9C84}
+.conv{margin-top:10px;font-size:12px;color:var(--txt-s)}
+.conv b{color:var(--verde)}
+
+.aceite-box{background:var(--amar-bg);border:2px solid var(--amar);border-radius:12px;padding:12px;margin-bottom:12px;text-align:center;display:none}
+.aceite-box .big{font-family:'DM Serif Display',serif;font-size:26px;color:var(--verde);line-height:1.1}
+.aceite-box .sm{font-size:12px;color:var(--txt-s);margin-top:2px}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:12px;background:#fff;border-radius:10px;border:1px solid var(--borde);padding:4px}
+.tab{flex:1;border:none;border-radius:7px;padding:10px 4px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--txt-s)}
+.tab.active{background:var(--verde);color:var(--amar-lt)}
+.tab-pane{display:none}.tab-pane.active{display:block}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:#fff;border-radius:10px;padding:11px 12px;border:1px solid var(--borde)}
+.kpi-l{font-size:10px;color:var(--txt-s);margin-bottom:4px;font-weight:500;line-height:1.3}
+.kpi-v{font-size:20px;font-weight:700;color:var(--verde);line-height:1}
+.kpi-u{font-size:10px;color:var(--txt-s);margin-top:3px}
+.kpi.hl{border-color:var(--amar);background:var(--amar-bg)}
+.kpi.ok{border-color:var(--verde-mid);background:var(--verde-bg)}
+.kpi.warn{border-color:var(--amar-dk);background:var(--crema)}
+.kpi.warn .kpi-v{color:var(--amar-dk)}
+
+/* GRUPOS DE COSTO */
+.grp{border:1px solid var(--borde);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.grp-h{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--verde-bg);padding:10px 12px}
+.grp-n{font-weight:700;font-size:13px;color:var(--verde);line-height:1.25}
+.grp-n small{display:block;font-weight:500;font-size:10.5px;color:var(--txt-s);margin-top:2px}
+.grp-v{text-align:right;white-space:nowrap}
+.grp-v b{font-size:14px;color:var(--verde)}
+.grp-v span{display:block;font-size:10px;color:var(--txt-s)}
+.chk{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-top:1px solid #E5EFD2;font-size:13px;cursor:pointer;min-height:44px}
+.chk label{display:flex;align-items:center;gap:10px;cursor:pointer;flex:1}
+.chk input{accent-color:var(--verde-mid);width:20px;height:20px;flex-shrink:0}
+.chk.off{color:#9AAE94}.chk.off .m{text-decoration:line-through}
+.chk .m{font-weight:600;white-space:nowrap}
+.grp-tot{display:flex;justify-content:space-between;background:var(--amar-bg);border:2px solid var(--amar);border-radius:10px;padding:12px;font-weight:700;color:var(--verde)}
+.nota{font-size:11px;color:var(--txt-s);margin-top:8px;line-height:1.45}
+
+/* TABLAS */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--verde);color:var(--amar-lt);padding:7px 8px;text-align:left;font-weight:600;font-size:10px;white-space:nowrap}
+th.r,td.r{text-align:right}
+td{padding:7px 8px;border-bottom:1px solid #E5EFD2;vertical-align:middle;white-space:nowrap}
+tr.cur td{background:var(--amar-bg);font-weight:700}
+
+details.params summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--verde);padding:4px 0}
+.params-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+
+.btn-guardar{width:100%;background:var(--verde);color:var(--amar-lt);border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:12px;border-bottom:3px solid var(--amar)}
+.msg{border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:12px;display:none}
+.msg.ok{background:var(--verde-bg);border:1px solid var(--verde-mid);color:var(--verde)}
+.msg.err{background:var(--rojo-lt);border:1px solid var(--rojo);color:var(--rojo)}
+.pager{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--txt-s)}
+.pager button{background:var(--verde);color:var(--amar-lt);border:none;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;min-height:38px}
+.pager button:disabled{background:#CBD5C0;color:#fff;cursor:default}
+.hist-empty{font-size:12px;color:var(--txt-s);text-align:center;padding:18px 0}
+.btn-del{background:none;border:none;cursor:pointer;font-size:15px;padding:4px 6px}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700;white-space:nowrap}
+.b-ok{background:var(--verde);color:var(--amar-lt)}
+.b-pend{background:var(--amar);color:var(--verde)}
+.b-esc{background:var(--verde-bg);color:var(--verde);border:1px solid var(--borde)}
+
+@media(max-width:480px){
+  .h-title{font-size:17px}
+  .h-empresa{font-size:12.5px}
+  .inputs-grid{grid-template-columns:1fr 1fr}
+  .inputs-grid .field:first-child{grid-column:1/-1}
+  .params-grid{grid-template-columns:1fr 1fr}
+  .esc-t{font-size:11.5px}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .kpi-v{font-size:18px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-top">
+    <div class="h-title">Costos de producción<br>Chifles de plátano</div>
+    <div class="h-right">
+      <div class="h-empresa" id="h-empresa">La Asociación Agroindustrias Progreso – AAIPRO</div>
+      <a class="btn-dash" id="btn-dashboard" href="dashboard_chifles_aaipro.html">📊 Ver dashboard</a>
+    </div>
+  </div>
+</header>
+
+<div class="sync-bar">
+  <span id="sync-status">📦 Datos guardados localmente</span>
+  <button class="btn-sync" onclick="intentarSync()">↑ Sincronizar</button>
+</div>
+
+<div class="lote-bar">
+  <span class="lote-id" id="lote-display">—</span>
+  <span class="lote-fecha" id="fecha-display">—</span>
+</div>
+
+<div class="wrap">
+
+  <div class="card">
+    <div class="sec-label">1 · Escenario de costeo</div>
+    <div class="esc-grid">
+      <button class="esc active" id="esc-completo" onclick="setEscenario('completo')"><div class="esc-n">Escenario 1</div><div class="esc-t">Producción completa</div></button>
+      <button class="esc" id="esc-blanca" onclick="setEscenario('blanca')"><div class="esc-n">Escenario 2</div><div class="esc-t">Marca blanca</div></button>
+      <button class="esc" id="esc-maquila" onclick="setEscenario('maquila')"><div class="esc-n">Escenario 3</div><div class="esc-t">Maquila</div></button>
+    </div>
+    <div class="esc-desc" id="esc-desc"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec-label">2 · Datos del lote</div>
+    <div class="inputs-grid">
+      <div class="field">
+        <label>Dedos de plátano a procesar</label>
+        <input type="number" inputmode="numeric" id="dedos" value="6400" min="1" step="100" oninput="recalcular()">
+      </div>
+      <div class="field">
+        <label id="lbl-precio">Precio por dedo (S/)</label>
+        <input type="number" inputmode="decimal" id="precio" value="0.40" min="0" step="0.05" oninput="recalcular()">
+      </div>
+      <div class="field">
+        <label>Presentación</label>
+        <select id="presentacion" onchange="recalcular()">
+          <option value="25">25 gramos</option>
+          <option value="170">170 gramos</option>
+          <option value="250">250 gramos</option>
+          <option value="500">500 gramos</option>
+          <option value="1000" selected>1000 gramos</option>
+        </select>
+      </div>
+    </div>
+    <div class="inputs-grid" id="main-params" style="grid-template-columns:1fr 1fr;margin-top:10px"></div>
+    <div class="conv" id="conv">—</div>
+  </div>
+
+  <div class="aceite-box" id="aceite-box">
+    <div class="sm">El cliente debe entregar</div>
+    <div class="big" id="aceite-gal">—</div>
+    <div class="sm" id="aceite-sub">—</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setTab(0)">📊 Unidades</button>
+    <button class="tab" onclick="setTab(1)">💰 Costos</button>
+    <button class="tab" onclick="setTab(2)">📈 Precio</button>
+  </div>
+
+  <!-- PESTAÑA 1 -->
+  <div class="tab-pane active" id="pane0">
+    <div class="kpi-grid">
+      <div class="kpi hl"><div class="kpi-l">Plátano verde</div><div class="kpi-v" id="k1-kgv">—</div><div class="kpi-u">kg (dedos ÷ 3.2)</div></div>
+      <div class="kpi ok"><div class="kpi-l">Chifle salado terminado</div><div class="kpi-v" id="k1-kgf">—</div><div class="kpi-u">kg producto final</div></div>
+      <div class="kpi ok"><div class="kpi-l">Rendimiento</div><div class="kpi-v" id="k1-rend">—</div><div class="kpi-u">% sobre plátano verde</div></div>
+      <div class="kpi ok"><div class="kpi-l">Unidades producidas</div><div class="kpi-v" id="k1-und">—</div><div class="kpi-u" id="k1-pres">—</div></div>
+      <div class="kpi"><div class="kpi-l">Días de trabajo</div><div class="kpi-v" id="k1-dias">—</div><div class="kpi-u" id="k1-dias-u">—</div></div>
+      <div class="kpi"><div class="kpi-l">Costo fijo asignado</div><div class="kpi-v" id="k1-f">—</div><div class="kpi-u">6,400 dedos = 100 %</div></div>
+    </div>
+    <div class="card">
+      <div class="sec-label">Balance de materia</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Etapa</th><th class="r">Merma</th><th class="r">Entra kg</th><th class="r">Merma kg</th><th class="r">Sale kg</th></tr>
+        <tbody id="flujo-body"></tbody>
+      </table></div>
+      <div class="nota" id="flujo-nota"></div>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 2 -->
+  <div class="tab-pane" id="pane1">
+    <div class="kpi-grid">
+      <div class="kpi hl"><div class="kpi-l">Costo total</div><div class="kpi-v" id="k2-total">—</div><div class="kpi-u">capital de trabajo</div></div>
+      <div class="kpi warn"><div class="kpi-l">Costo por unidad</div><div class="kpi-v" id="k2-und">—</div><div class="kpi-u" id="k2-und-l">—</div></div>
+      <div class="kpi ok"><div class="kpi-l">Costos variables</div><div class="kpi-v" id="k2-var">—</div><div class="kpi-u" id="k2-var-p">—</div></div>
+      <div class="kpi"><div class="kpi-l">Costos fijos</div><div class="kpi-v" id="k2-fijo">—</div><div class="kpi-u" id="k2-fijo-p">—</div></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-label">Costos por grupo</div>
+      <div id="grupos"></div>
+      <div class="grp-tot"><span>TOTAL</span><span id="g-total">—</span></div>
+      <div class="nota" id="abc-nota"></div>
+    </div>
+
+    <div class="card">
+      <details class="params">
+        <summary>⚙️ Tarifas editables</summary>
+        <div class="params-grid" id="params-grid"></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 3 -->
+  <div class="tab-pane" id="pane2">
+    <div class="card">
+      <div class="sec-label">Parámetros de precio</div>
+      <div class="inputs-grid" style="grid-template-columns:1fr 1fr">
+        <div class="field"><label>Utilidad deseada (%)</label>
+          <input type="number" inputmode="decimal" id="utilidad" value="30" min="0" max="300" step="1" oninput="recalcular()"></div>
+        <div class="field"><label>Impuesto / Renta (%)</label>
+          <input type="number" inputmode="decimal" id="impuesto" value="1.5" min="0" max="30" step="0.5" oninput="recalcular()"></div>
+      </div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi ok"><div class="kpi-l" id="k3-pv-l">Precio de venta</div><div class="kpi-v" id="k3-pv">—</div><div class="kpi-u" id="k3-pv-u">—</div></div>
+      <div class="kpi hl"><div class="kpi-l">Precio con IGV (18 %)</div><div class="kpi-v" id="k3-igv">—</div><div class="kpi-u" id="k3-igv-u">—</div></div>
+      <div class="kpi ok"><div class="kpi-l">Utilidad en soles</div><div class="kpi-v" id="k3-ut">—</div><div class="kpi-u">total del lote</div></div>
+    </div>
+    <div class="card">
+      <div class="sec-label">Escalabilidad (mismas condiciones)</div>
+      <div class="tbl-wrap"><table>
+        <tr><th>Dedos</th><th class="r">Unid.</th><th class="r">Costo total</th><th class="r">Costo/und</th><th class="r">Precio</th></tr>
+        <tbody id="esc-body"></tbody>
+      </table></div>
+      <div class="nota">Hasta 6,400 dedos el costo fijo se reparte proporcionalmente; desde 6,400 queda fijo.</div>
+    </div>
+  </div>
+
+  <button class="btn-guardar" onclick="guardarLote()">💾 Guardar lote</button>
+  <div class="msg" id="msg"></div>
+
+  <div class="card">
+    <div class="sec-label">📂 Historial de lotes</div>
+    <div id="hist-body"><div class="hist-empty">Sin registros guardados.</div></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIG 1/2 — CONEXIÓN (editar al desplegar)
+// ══════════════════════════════════════════
+const CFG = {
+  EMPRESA:         'La Asociación Agroindustrias Progreso – AAIPRO',
+  APPS_SCRIPT_URL: 'PEGAR_URL_DEPLOY_AQUI',   // URL /exec del Apps Script (la misma en el dashboard)
+  SYNC_MODE:       'GET',                     // 'GET' (probado en GitHub Pages) | 'POST'
+  DASHBOARD_URL:   'dashboard_chifles_aaipro.html',  // misma carpeta de GitHub Pages (o URL completa)
+  STORAGE_KEY:     'apd_chifles_aaipro',
+};
+const STORAGE_KEY = CFG.STORAGE_KEY;
+const SEQ_KEY     = CFG.STORAGE_KEY + '_seq';
+
+// ══════════════════════════════════════════
+// CONFIG 2/2 — PARÁMETROS DE PLANTA AAIPRO (Excel "mejorado")
+// ══════════════════════════════════════════
+const DEDOS_BASE  = 6400;   // 100 % del costo fijo
+const DEDOS_X_KG  = 3.2;    // dedos → kg de plátano verde
+const DEDOS_X_GAL = 200;    // 1 galón de aceite por cada 200 dedos
+const KG_X_CAJA   = 20;     // kg de chifle por caja embalada
+const KG_GAS_X_KG = 0.140625;   // kg de gas por kg de chifle
+const KG_BALON    = 45;         // kg por balón de gas
+const KG_X_BATCH  = 12;         // kg de plátano verde por batch (hoja Flujo de proceso)
+const KW = {corte:1.25*0.7457, campana:2*0.7457, selladora:0.75*0.7457, fechadora:0.25*0.7457};  // HP → kW
+const MIN_CORTE = 3.34, MIN_FRIT = 6, CALENTAR_FRIT = 12, CALENTAR_SELL = 8, MIN_MAQ_UND = 1/15;  // minutos
+const DEP_DIA     = 11.805556;  // S/ depreciación por día-máquina
+const MANT_DIA    = 2.361111;   // S/ mantenimiento por día-máquina
+const ACEITE_REEMPLAZO_GAL_X_200 = 1;  // galones de reposición por cada 200 dedos
+const EPP_DIA_UNIT = 0.2+0.6+0.3+1+0.5+0.5;  // S/ de EPP y limpieza por unidad-día (2 unidades por día de trabajo)
+const MERMAS = {pelado:0.40, corte:0.012, fritado:0.42, ensalado:0.02};   // Excel v3
+
+// destacados (4.º valor 'main'): se editan en "Datos del lote"; el resto en "Tarifas editables"
+const PARAMS = [
+  ['aceite','Precio aceite de fritado (S/ galón)',25,0.5,'main'],
+  ['aceite_rep','Precio aceite de reposición (S/ galón)',32,0.5,'main'],
+  ['sal','Sal (S/ kg chifle)',0.10,0.01],
+  ['bolsa','Bolsa (S/ und)',0.06,0.01],
+  ['etiqueta','Etiqueta (S/ und)',0.037,0.001],
+  ['flete','Flete (S/ kg chifle)',0.12,0.01],
+  ['tarifa_gas','Gas (S/ kg de gas)',5.1111,0.05],
+  ['tarifa_kwh','Electricidad (S/ kWh)',0.7243,0.01],
+  ['mod','Mano de obra (S/ hora)',6.25,0.25],
+  ['marketing','Marketing (S/ mes)',350,10],
+  ['telefono','Teléfono (S/ mes)',60,5],
+  ['contador','Contador (S/ mes)',150,10],
+];
+
+// minutos-hombre: por batch de 12 kg de plátano verde (MO_BATCH) o por unidad envasada (MO_UND)
+const MO_BATCH = [
+  ['recep','Recepción',5],['lavv','Lavado plátano verde',6],['pelado','Pelado',9],
+  ['lavp','Lavado plátano pelado',6],['trasl','Traslado para fritado',2],['corte','Corte',3.34],
+  ['frit','Fritado',6],['escur','Escurrido',3],['ensal','Ensalado',1],
+];
+const MO_UND = [['env','Envasado y sellado',0.1],['etiq','Etiquetado',1/30]];
+const MIN_ALMACEN = 1/30;   // almacenamiento: cuenta para los días de trabajo, no se cobra (igual que el Excel)
+
+// ══════════════════════════════════════════
+// ESCENARIOS
+// excl = ítems que NO se cobran; el resto del costeo es igual
+// ══════════════════════════════════════════
+const ESCENARIOS = {
+  completo:{util:30, excl:[],
+    desc:'La planta aporta plátano, aceite, sal y envase, y realiza todo el proceso. Chifle salado terminado.'},
+  blanca:{util:30, excl:['bolsa','etiqueta','caja','cinta_emb','microfilm','cinta_fech','flete'],
+    desc:'Marca blanca: el cliente proporciona el envase. La planta pone plátano, aceite y sal.'},
+  maquila:{util:40, excl:['platano','aceite_fr','mo_lavv','mo_pelado','mo_lavp','mo_trasl'],
+    desc:'Maquila: el cliente entrega el plátano verde, lo pela y trae el aceite de fritado (1 galón por cada 200 dedos). La planta cobra el servicio.'}
+};
+const NOTAS_GRUPO = {
+  blanca:{A:'Sin envase: lo pone el cliente'},
+  maquila:{A:'Sin plátano ni aceite: los pone el cliente', D:'Sin lavado, pelado ni traslado'}
+};
+const GRUPOS = [
+  ['A','Materia prima e insumos'],
+  ['B','Servicios (energía eléctrica y gas)'],
+  ['C','Mantenimiento, depreciación y reposición de aceite'],
+  ['D','Mano de obra de producción'],
+  ['E','Gastos administrativos y otros'],
+];
+const CHECKS = [
+  ['dep','Depreciación'],
+  ['mant','Mantenimiento'],
+  ['aceite_rep','Aceite para reemplazo'],
+];
+
+let state = {esc:'completo', chk:{dep:true, mant:true, aceite_rep:true}};
+let calc = {};
+
+// ══════════════════════════════════════════
+// UTILIDADES
+// ══════════════════════════════════════════
+const $ = id => document.getElementById(id);
+function num(id, def){ const v = parseFloat($(id).value); return isNaN(v) ? def : v; }
+function setText(id, v){ const el = $(id); if (el) el.textContent = v; }
+function fmt(n, d=2){
+  if (n===undefined || n===null || isNaN(n) || !isFinite(n)) return '—';
+  return Number(n).toLocaleString('es-PE',{minimumFractionDigits:d,maximumFractionDigits:d});
+}
+function fmtInt(n){ return (n===undefined||n===null||isNaN(n)) ? '—' : Number(n).toLocaleString('es-PE'); }
+const sf = n => 'S/ ' + fmt(n);
+const r2 = n => Math.round(n*100)/100;
+
+function leerInputs(){
+  const p = {};
+  PARAMS.forEach(([id,,def]) => { p[id] = num('p_'+id, def); });
+  return {N:num('dedos',0), precio:num('precio',0), pres:parseInt($('presentacion').value)||1000,
+          util:num('utilidad',30), imp:num('impuesto',1.5), p};
+}
+
+// ══════════════════════════════════════════
+// MOTOR DE CÁLCULO (puro)
+//  · fijo (marketing, teléfono, contador): proporcional hasta 6,400 dedos y fijo desde ahí
+//  · depreciación y mantenimiento: por días-máquina; EPP: por días de trabajo
+//  · todo lo demás varía con la producción
+// ══════════════════════════════════════════
+function compute(N, inp, escKey, chk){
+  const excl = ESCENARIOS[escKey].excl;
+  const p = inp.p;
+  const f = N / DEDOS_BASE;
+  const fFijo = Math.min(N, DEDOS_BASE) / DEDOS_BASE;
+  const kgV = N / DEDOS_X_KG;
+  const kgP = kgV*(1-MERMAS.pelado), kgC = kgP*(1-MERMAS.corte);
+  const kgFr = kgC*(1-MERMAS.fritado), kgF = kgFr*(1-MERMAS.ensalado);
+  const units = Math.round(kgF*1000/inp.pres);
+  // tiempos (minutos): batches de 12 kg de plátano verde y unidades envasadas
+  const B = kgV / KG_X_BATCH;
+  const hHom = (MO_BATCH.reduce((s,m)=>s+m[2],0)*B + (MO_UND.reduce((s,m)=>s+m[2],0)+MIN_ALMACEN)*units) / 60;
+  const diasTrab = Math.max(1, Math.ceil(hHom/8 - 1e-9));
+  const hCorte = MIN_CORTE*B/60;
+  const hSell  = (MIN_MAQ_UND*units + CALENTAR_SELL)/60;
+  const hFech  = MIN_MAQ_UND*units/60;
+  const hMaq = hCorte + (MIN_FRIT*B + CALENTAR_FRIT*diasTrab)/60 + hSell + hFech;
+  const diasMaq = Math.max(1, Math.ceil(hMaq/8 - 1e-9));
+  const galFr = N/DEDOS_X_GAL;
+  const kgGas = kgF*KG_GAS_X_KG;
+  const kwh = (KW.corte + KW.campana)*hCorte + KW.selladora*hSell + KW.fechadora*hFech;
+  const cajas = kgF/KG_X_CAJA;
+
+  const it = [];  // {id,g,t,v,hh?}
+  const add = (id,g,t,v,hh=0) => it.push({id,g,t,v,hh});
+  add('platano','A','V', N*inp.precio);
+  add('aceite_fr','A','V', galFr*p.aceite);
+  add('sal','A','V', kgF*p.sal);
+  add('bolsa','A','V', units*p.bolsa);
+  add('etiqueta','A','V', units*p.etiqueta);
+  add('caja','A','V', cajas*0.02);
+  add('cinta_emb','A','V', cajas*0.10);
+  add('microfilm','A','V', cajas*0.50);
+  add('cinta_fech','A','V', cajas*0.002);
+  add('flete','A','V', kgF*p.flete);
+  add('elec','B','V', kwh*p.tarifa_kwh);
+  add('gas','B','V', kgGas*p.tarifa_gas);
+  add('dep','C','F', DEP_DIA*diasMaq);
+  add('mant','C','F', MANT_DIA*diasMaq);
+  add('aceite_rep','C','V', galFr*ACEITE_REEMPLAZO_GAL_X_200*p.aceite_rep);
+  MO_BATCH.forEach(([k,,m]) => add('mo_'+k,'D','V', m*B/60*p.mod, m*B/60));
+  MO_UND.forEach(([k,,m]) => add('mo_'+k,'D','V', m*units/60*p.mod, m*units/60));
+  const hLimp = 9 + 6*diasTrab/7;
+  add('mo_limp','D','V', hLimp*p.mod, hLimp);
+  add('marketing','E','F', p.marketing*fFijo);
+  add('telefono','E','F', p.telefono*fFijo);
+  add('contador','E','F', p.contador*fFijo);
+  add('epp','E','F', 2*diasTrab*EPP_DIA_UNIT);
+
+  const sub = {A:0,B:0,C:0,D:0,E:0}, items = {};
+  let fijo = 0, variable = 0, hh = 0;
+  it.forEach(x => {
+    items[x.id] = x.v;
+    let inc = !excl.includes(x.id);
+    if (CHECKS.some(c => c[0]===x.id)) inc = !!chk[x.id];
+    x.inc = inc;
+    if (!inc) return;
+    sub[x.g] += x.v;
+    if (x.t==='F') fijo += x.v; else variable += x.v;
+    hh += x.hh;
+  });
+  const total = fijo + variable;
+  const costo_und = units > 0 ? total/units : 0;
+  const factor = (1+inp.util/100)*(1+inp.imp/100);
+  const precio_venta = costo_und*factor;
+  const on = id => it.find(x=>x.id===id).inc;
+  return {
+    N,f,fFijo,kgV,kgP,kgC,kgFr,kgF,units,diasTrab,diasMaq,hMaq,
+    sub,items,total,fijo,variable,hh,costo_und,precio_venta,
+    precio_igv:precio_venta*1.18, utilidad_sol:total*inp.util/100,
+    rend:kgV>0 ? kgF/kgV*100 : 0,
+    pres:inp.pres, util:inp.util, imp:inp.imp, precio:inp.precio,
+    aceite_fr_gal:galFr, aceite_fr_soles:on('aceite_fr')?items.aceite_fr:0,
+    aceite_cliente_gal:escKey==='maquila'?galFr:0,
+    aceite_rep_gal:on('aceite_rep')?galFr*ACEITE_REEMPLAZO_GAL_X_200:0,
+    aceite_rep_soles:on('aceite_rep')?items.aceite_rep:0,
+    gas_kg:kgGas, gas_soles:items.gas, kwh, elec_soles:items.elec,
+    inc:{dep:on('dep'),mant:on('mant'),aceite_rep:on('aceite_rep')}
+  };
+}
+
+// ══════════════════════════════════════════
+// ESCENARIO Y CHECKS
+// ══════════════════════════════════════════
+function setEscenario(key){
+  state.esc = key;
+  ['completo','blanca','maquila'].forEach(k => $('esc-'+k).classList.toggle('active', k===key));
+  $('esc-desc').textContent = ESCENARIOS[key].desc;
+  $('utilidad').value = ESCENARIOS[key].util;
+  const mq = key==='maquila';
+  $('precio').disabled = mq;
+  $('p_aceite').disabled = mq;
+  $('lbl-precio').textContent = mq ? 'Precio por dedo (lo pone el cliente)' : 'Precio por dedo (S/)';
+  recalcular();
+}
+function toggleChk(id){ state.chk[id] = !state.chk[id]; recalcular(); }
+
+// ══════════════════════════════════════════
+// RECALCULAR Y RENDER
+// ══════════════════════════════════════════
+// tarifas editables y checks se recuerdan en este dispositivo (opcional: si el navegador lo bloquea, sigue funcionando)
+const CFG_KEY = CFG.STORAGE_KEY + '_cfg';
+function cargarCfg(){ try{ return JSON.parse(localStorage.getItem(CFG_KEY)||'{}'); }catch(e){ return {}; } }
+function guardarCfg(inp){ try{ localStorage.setItem(CFG_KEY, JSON.stringify({p:inp.p, chk:state.chk})); }catch(e){} }
+
+function recalcular(){
+  const inp = leerInputs();
+  guardarCfg(inp);
+  if (!(inp.N > 0)){ calc = {}; renderVacio(); return; }
+  calc = compute(inp.N, inp, state.esc, state.chk);
+  renderConv(); renderP1(); renderP2(); renderP3(inp);
+}
+function renderVacio(){
+  ['k1-kgv','k1-kgf','k1-rend','k1-und','k1-dias','k1-f','k2-total','k2-und','k2-var','k2-fijo',
+   'k3-pv','k3-ut','k3-igv','g-total'].forEach(id => setText(id,'—'));
+  setText('conv','Ingresa los dedos de plátano a procesar.');
+  $('aceite-box').style.display = 'none';
+  ['flujo-body','grupos','esc-body'].forEach(id => $(id).innerHTML = '');
+}
+function renderConv(){
+  const c = calc;
+  $('conv').innerHTML = `<b>${fmtInt(c.N)}</b> dedos ÷ ${DEDOS_X_KG} = <b>${fmt(c.kgV,1)} kg</b> de plátano verde`;
+  const box = $('aceite-box');
+  if (state.esc==='maquila'){
+    const gal = Math.ceil(c.N/DEDOS_X_GAL - 1e-9);
+    box.style.display = 'block';
+    setText('aceite-gal', `${fmtInt(gal)} ${gal===1?'galón':'galones'} de aceite`);
+    setText('aceite-sub', `1 galón por cada ${DEDOS_X_GAL} dedos · ${fmtInt(c.N)} dedos`);
+  } else box.style.display = 'none';
+}
+function renderP1(){
+  const c = calc;
+  setText('k1-kgv', fmt(c.kgV,1));
+  setText('k1-kgf', fmt(c.kgF,1));
+  setText('k1-rend', fmt(c.rend,1)+' %');
+  setText('k1-und', fmtInt(c.units));
+  setText('k1-pres', `bolsas de ${c.pres} g`);
+  setText('k1-dias', fmtInt(c.diasTrab));
+  setText('k1-dias-u', `${fmtInt(c.diasMaq)} día(s) de máquina`);
+  setText('k1-f', fmt(c.fFijo*100,1)+' %');
+  const et = [
+    ['Recepción y lavado',null,c.kgV,0,c.kgV],
+    ['Pelado',MERMAS.pelado,c.kgV,c.kgV-c.kgP,c.kgP],
+    ['Corte',MERMAS.corte,c.kgP,c.kgP-c.kgC,c.kgC],
+    ['Fritado',MERMAS.fritado,c.kgC,c.kgC-c.kgFr,c.kgFr],
+    ['Ensalado',MERMAS.ensalado,c.kgFr,c.kgFr-c.kgF,c.kgF],
+  ];
+  $('flujo-body').innerHTML = et.map(e => `<tr><td>${e[0]}</td><td class="r">${e[1]===null?'—':fmt(e[1]*100,1)+' %'}</td>
+    <td class="r">${fmt(e[2],1)}</td><td class="r">${fmt(e[3],1)}</td><td class="r">${fmt(e[4],1)}</td></tr>`).join('');
+  setText('flujo-nota', state.esc==='maquila'
+    ? 'En maquila el cliente entrega el plátano ya pelado; la merma de pelado es del cliente y la planta procesa desde el corte.' : '');
+}
+function renderP2(){
+  const c = calc;
+  setText('k2-total', sf(c.total));
+  setText('k2-und', sf(c.costo_und));
+  setText('k2-und-l', `por bolsa de ${c.pres} g`);
+  setText('k2-var', sf(c.variable));
+  setText('k2-var-p', c.total>0 ? fmt(c.variable/c.total*100,1)+' % del total' : '—');
+  setText('k2-fijo', sf(c.fijo));
+  setText('k2-fijo-p', c.total>0 ? fmt(c.fijo/c.total*100,1)+' % del total' : '—');
+  setText('g-total', sf(c.total));
+  const pct = v => c.total>0 ? fmt(v/c.total*100,1)+' %' : '—';
+  const notas = NOTAS_GRUPO[state.esc] || {};
+  $('grupos').innerHTML = GRUPOS.map(([g,n]) => {
+    let h = `<div class="grp"><div class="grp-h"><div class="grp-n">${n}${notas[g]?`<small>${notas[g]}</small>`:''}</div>
+      <div class="grp-v"><b>${sf(c.sub[g])}</b><span>${pct(c.sub[g])}</span></div></div>`;
+    if (g==='C') CHECKS.forEach(([id,nom]) => {
+      const on = state.chk[id];
+      h += `<div class="chk ${on?'':'off'}"><label><input type="checkbox" ${on?'checked':''} onchange="toggleChk('${id}')"> ${nom}</label>
+            <span class="m">${sf(c.items[id])}</span></div>`;
+    });
+    return h + '</div>';
+  }).join('');
+  setText('abc-nota', `Costo fijo asignado: ${fmt(c.fFijo*100,1)} % de marketing, teléfono y contador (se reparte hasta 6,400 dedos y queda fijo desde ahí). Desmarca depreciación, mantenimiento o aceite para reemplazo para bajar el costo.`);
+}
+function renderP3(inp){
+  const c = calc, mq = state.esc==='maquila';
+  setText('k3-pv-l', mq ? 'Tarifa de maquila' : 'Precio de venta (x mayor)');
+  setText('k3-pv', sf(c.precio_venta));
+  setText('k3-pv-u', `por bolsa de ${c.pres} g · sin IGV`);
+  setText('k3-igv', sf(c.precio_igv));
+  setText('k3-igv-u', `por bolsa de ${c.pres} g`);
+  setText('k3-ut', sf(c.utilidad_sol));
+  const lista = [1280,3200,6400,9600,12800];
+  if (!lista.includes(c.N)) lista.push(c.N);
+  lista.sort((a,b)=>a-b);
+  $('esc-body').innerHTML = lista.map(N => {
+    const r = compute(N, inp, state.esc, state.chk);
+    return `<tr class="${N===c.N?'cur':''}"><td>${fmtInt(N)}${N===c.N?' ◄':''}</td><td class="r">${fmtInt(r.units)}</td>
+      <td class="r">${sf(r.total)}</td><td class="r">${sf(r.costo_und)}</td><td class="r">${sf(r.precio_venta)}</td></tr>`;
+  }).join('');
+}
+function setTab(i){
+  document.querySelectorAll('.tab').forEach((t,k)=>t.classList.toggle('active',k===i));
+  document.querySelectorAll('.tab-pane').forEach((p,k)=>p.classList.toggle('active',k===i));
+}
+
+// ══════════════════════════════════════════
+// LOTES Y HISTORIAL (local)
+// ══════════════════════════════════════════
+function formatFecha(d){ return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; }
+function prefijoHoy(){ const h=new Date(); return `Lote_${String(h.getDate()).padStart(2,'0')}${String(h.getMonth()+1).padStart(2,'0')}${h.getFullYear()}`; }
+function leerSeq(){ try{ const s=JSON.parse(localStorage.getItem(SEQ_KEY)||'{}'); return s.pref===prefijoHoy()?s.n:0; }catch(e){ return 0; } }
+function generarLoteId(){ return prefijoHoy() + String(leerSeq()+1).padStart(2,'0'); }
+function confirmarSeq(){ try{ localStorage.setItem(SEQ_KEY, JSON.stringify({pref:prefijoHoy(), n:leerSeq()+1})); }catch(e){} }
+function leerHist(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch(e){ return []; } }
+function guardarHist(h){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(h)); return true; }catch(e){ return false; } }
+const NOM_ESC = {completo:'Completa', blanca:'Marca blanca', maquila:'Maquila'};
+
+function mostrarMsg(txt, ok){
+  const el = $('msg'); el.textContent = txt; el.className = 'msg '+(ok?'ok':'err'); el.style.display='block';
+  setTimeout(()=>{ el.style.display='none'; }, 4000);
+}
+
+const inp_p = id => num('p_'+id, 0);
+
+function guardarLote(){
+  recalcular();
+  const c = calc;
+  if (!c.N || c.N<=0){ mostrarMsg('Ingresa los dedos de plátano antes de guardar.', false); return; }
+  const id = generarLoteId(), hoy = new Date();
+  const reg = {
+    lote:id, fecha_proceso:formatFecha(hoy), escenario:state.esc,
+    dedos:c.N, precio_dedo:state.esc==='maquila'?0:c.precio, kg_platano:r2(c.kgV),
+    presentacion_gramos:c.pres, producto_terminado:r2(c.kgF), unidades_producidas:c.units,
+    costo_materia_prima_insumos:r2(c.sub.A), costo_servicios:r2(c.sub.B), costo_mant_dep_aceite:r2(c.sub.C),
+    costo_mano_obra:r2(c.sub.D), costo_administrativos:r2(c.sub.E),
+    costo_total:r2(c.total), costo_fijo:r2(c.fijo), costo_variable:r2(c.variable),
+    costo_und:Math.round(c.costo_und*10000)/10000, utilidad_pct:c.util, impuesto_pct:c.imp,
+    precio_venta:Math.round(c.precio_venta*10000)/10000, precio_igv:Math.round(c.precio_igv*10000)/10000,
+    utilidad_soles:r2(c.utilidad_sol),
+    precio_aceite_gal:inp_p('aceite'), precio_aceite_rep_gal:inp_p('aceite_rep'),
+    aceite_fritado_gal:r2(c.aceite_fr_gal), aceite_fritado_soles:r2(c.aceite_fr_soles), aceite_cliente_gal:r2(c.aceite_cliente_gal),
+    aceite_reposicion_gal:r2(c.aceite_rep_gal), aceite_reposicion_soles:r2(c.aceite_rep_soles),
+    gas_kg:r2(c.gas_kg), gas_soles:r2(c.gas_soles), electricidad_kwh:r2(c.kwh), electricidad_soles:r2(c.elec_soles),
+    horas_hombre:r2(c.hh), horas_maquina:r2(c.hMaq), dias_trabajo:c.diasTrab, dias_maquina:c.diasMaq,
+    incluye_depreciacion:c.inc.dep?1:0, incluye_mantenimiento:c.inc.mant?1:0, incluye_aceite_reposicion:c.inc.aceite_rep?1:0,
+    timestamp:hoy.toISOString(), sincronizado:false
+  };
+  const hist = leerHist(); hist.unshift(reg);
+  if (!guardarHist(hist)){ mostrarMsg('No se pudo guardar en este dispositivo.', false); return; }
+  confirmarSeq();
+  $('lote-display').textContent = generarLoteId();
+  mostrarMsg(`✅ Lote ${id} guardado.`, true);
+  histPag = 0;
+  renderHistorial();
+  intentarSync();
+}
+
+// ══════════════════════════════════════════
+// SYNC GOOGLE SHEETS — enviar, luego CONFIRMAR leyendo (el fetch no-cors es opaco).
+// El Apps Script es idempotente por "lote": reenviar nunca duplica.
+// ══════════════════════════════════════════
+let syncEnCurso = false;
+const sheetsConfigurado = () => CFG.APPS_SCRIPT_URL && !CFG.APPS_SCRIPT_URL.includes('PEGAR_URL');
+function pick(r, ...names){
+  const ks = Object.keys(r);
+  for (const n of names){ const k = ks.find(x => x.toLowerCase()===n.toLowerCase()); if (k!==undefined) return r[k]; }
+  return undefined;
+}
+function estadoSync(hist=leerHist()){
+  if (!sheetsConfigurado()) return setText('sync-status','⚙️ Google Sheets no configurado (solo local)');
+  const pend = hist.filter(r => !r.sincronizado).length;
+  setText('sync-status', pend>0 ? `📦 ${pend} lote(s) sin sincronizar` : '✅ Todo sincronizado');
+}
+async function enviarRegistro(reg){
+  const {sincronizado, ...datos} = reg;
+  if (CFG.SYNC_MODE==='POST'){
+    const fd = new FormData(); fd.append('data', JSON.stringify(datos));
+    return fetch(CFG.APPS_SCRIPT_URL, {method:'POST', mode:'no-cors', body:fd});
+  }
+  return fetch(CFG.APPS_SCRIPT_URL + '?action=guardar&data=' + encodeURIComponent(JSON.stringify(datos)), {mode:'no-cors'});
+}
+async function lotesRemotos(){
+  const resp = await fetch(CFG.APPS_SCRIPT_URL + '?action=datos');
+  const json = await resp.json();
+  if (json.status!=='ok') throw new Error(json.mensaje||'respuesta inválida');
+  return new Set(json.datos.map(r => String(pick(r,'lote'))));
+}
+async function intentarSync(){
+  const pend = leerHist().filter(r => !r.sincronizado);
+  if (!sheetsConfigurado() || !pend.length) return estadoSync();
+  if (!navigator.onLine){ setText('sync-status', `📦 ${pend.length} lote(s) pendiente(s) — sin internet`); return; }
+  if (syncEnCurso) return;
+  syncEnCurso = true;
+  try{
+    for (const reg of pend) await enviarRegistro(reg);
+    const enHoja = await lotesRemotos();
+    const h = leerHist();
+    h.forEach(r => { if (enHoja.has(r.lote)) r.sincronizado = true; });
+    guardarHist(h);
+  }catch(e){
+    setText('sync-status', `⚠️ Error de red/Sheets — ${pend.length} pendiente(s)`);
+  }finally{
+    syncEnCurso = false;
+    renderHistorial();
+  }
+}
+window.addEventListener('online', intentarSync);
+
+function eliminarLote(id){
+  if (!confirm(`¿Eliminar el lote ${id} de este dispositivo?\nYa está guardado en Google Sheets.`)) return;
+  guardarHist(leerHist().filter(r => r.lote!==id));
+  renderHistorial();
+}
+const POR_PAG = 5;
+let histPag = 0;
+function irPag(d){ histPag += d; renderHistorial(); }
+function renderHistorial(){
+  const hist = leerHist(), body = $('hist-body');
+  if (!hist.length){ body.innerHTML = '<div class="hist-empty">Sin registros guardados.</div>'; estadoSync(hist); return; }
+  const pags = Math.ceil(hist.length/POR_PAG);
+  histPag = Math.min(Math.max(histPag,0), pags-1);
+  const desde = histPag*POR_PAG, vista = hist.slice(desde, desde+POR_PAG);
+  const pager = pags>1 ? `<div class="pager"><button onclick="irPag(-1)" ${histPag===0?'disabled':''}>← Anterior</button>
+    <span>${desde+1}–${desde+vista.length} de ${hist.length}</span>
+    <button onclick="irPag(1)" ${histPag>=pags-1?'disabled':''}>Siguiente →</button></div>` : '';
+  body.innerHTML = `<div class="tbl-wrap"><table>
+    <tr><th>Lote</th><th>Fecha</th><th>Escenario</th><th class="r">Dedos</th><th class="r">Costo/und</th><th class="r">Costo total</th><th>Estado</th><th></th></tr>` +
+    vista.map(r => `<tr><td style="font-weight:700;font-size:10px">${r.lote}</td><td>${r.fecha_proceso}</td>
+      <td><span class="badge b-esc">${NOM_ESC[r.escenario]||r.escenario}</span></td>
+      <td class="r">${fmtInt(r.dedos)}</td><td class="r">${sf(r.costo_und)}</td><td class="r">${sf(r.costo_total)}</td>
+      <td>${r.sincronizado?'<span class="badge b-ok">✓ Sheets</span>':'<span class="badge b-pend">Pendiente</span>'}</td>
+      <td>${r.sincronizado?`<button class="btn-del" title="Eliminar" onclick="eliminarLote('${r.lote}')">🗑️</button>`:'<span title="Solo se eliminan lotes sincronizados">🔒</span>'}</td></tr>`).join('') +
+    '</table></div>' + pager;
+  estadoSync(hist);
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+(function init(){
+  document.title = 'Costos de Chifles · AAIPRO';
+  $('h-empresa').textContent = CFG.EMPRESA;
+  $('btn-dashboard').href = CFG.DASHBOARD_URL || 'dashboard_chifles_aaipro.html';
+  const guardado = cargarCfg();
+  const campo = ([id,l,v,s]) =>
+    `<div class="field"><label>${l}</label><input type="number" inputmode="decimal" id="p_${id}" value="${guardado.p && guardado.p[id]!==undefined ? guardado.p[id] : v}" min="0" step="${s}" oninput="recalcular()"></div>`;
+  $('main-params').innerHTML = PARAMS.filter(x=>x[4]==='main').map(campo).join('');
+  $('params-grid').innerHTML = PARAMS.filter(x=>x[4]!=='main').map(campo).join('');
+  if (guardado.chk) Object.keys(state.chk).forEach(k => { if (guardado.chk[k]!==undefined) state.chk[k] = !!guardado.chk[k]; });
+  $('lote-display').textContent = generarLoteId();
+  $('fecha-display').textContent = formatFecha(new Date());
+  setEscenario('completo');
+  renderHistorial();
+  intentarSync();
+})();
+</script>
+</body>
+</html>
